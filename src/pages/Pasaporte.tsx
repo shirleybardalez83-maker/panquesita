@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FERIAS_POR_FECHA } from '../data/ferias'
 import { RECOMPENSAS } from '../data/recompensas'
@@ -262,9 +263,8 @@ function ComoSumar() {
 function ActividadReciente() {
   const { actividad, reiniciar } = usePasaporte()
 
-  function confirmarReinicio() {
-    if (window.confirm('¿Borrar todo tu progreso de esta demo? Puntos, sellos y canjes volverán a cero.')) reiniciar()
-  }
+  // Confirmación dentro de la página (sin ventanas emergentes del navegador)
+  const [confirmando, setConfirmando] = useState(false)
 
   return (
     <section aria-labelledby="titulo-actividad">
@@ -289,13 +289,39 @@ function ActividadReciente() {
           ))}
         </ol>
       )}
-      <button
-        type="button"
-        onClick={confirmarReinicio}
-        className="mt-6 min-h-11 rounded-full border-2 border-gris-calido px-5 py-2 text-sm font-bold text-gris-calido hover:border-carbon hover:text-carbon"
-      >
-        Reiniciar demo
-      </button>
+      {confirmando ? (
+        <div role="alert" className="mt-6 rounded-tarjeta border-2 border-arcilla bg-white p-4">
+          <p className="font-bold text-carbon">¿Borrar todo tu progreso de esta demo?</p>
+          <p className="text-sm text-gris-calido">Puntos, sellos, canjes, voto y nominaciones volverán a cero.</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                reiniciar()
+                setConfirmando(false)
+              }}
+              className="min-h-11 rounded-full bg-arcilla px-5 py-2 text-sm font-bold text-white hover:bg-arcilla-oscura"
+            >
+              Sí, borrar
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirmando(false)}
+              className="min-h-11 rounded-full border-2 border-carbon px-5 py-2 text-sm font-bold text-carbon hover:bg-carbon hover:text-algodon"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setConfirmando(true)}
+          className="mt-6 min-h-11 rounded-full border-2 border-gris-calido px-5 py-2 text-sm font-bold text-gris-calido hover:border-carbon hover:text-carbon"
+        >
+          Reiniciar demo
+        </button>
+      )}
     </section>
   )
 }
